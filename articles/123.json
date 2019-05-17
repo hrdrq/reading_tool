@@ -1,0 +1,26 @@
+[
+  [
+    {
+      "text": "This is a story.",
+      "start": 2,
+      "end": 5
+    },
+    {
+      "text": "About a boy and a girl.",
+      "start": 7,
+      "end": 10
+    }
+  ],
+  [
+    {
+      "text": "When they are hungry,",
+      "start": 20,
+      "end": 25
+    },
+    {
+      "text": "They eat dinner.",
+      "start": 28,
+      "end": 33
+    }
+  ]
+]
