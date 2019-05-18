@@ -3,10 +3,13 @@
 import sys
 
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QLabel
+from PyQt5.QtCore import Qt
 
 from rt.base import Base
 from rt.ui.list import List
 from rt.ui.view import View
+from rt.shortcut import Shortcut
+from rt.recorder import Recorder
 
 class Ui(QMainWindow):
 
@@ -20,7 +23,8 @@ class Ui(QMainWindow):
         self.height = 480
 
 
-
+        self.shortcut = Shortcut(self)
+        self.recorder = Recorder()
         self.initUI()
 
     def initUI(self):
@@ -35,3 +39,21 @@ class Ui(QMainWindow):
         self.layout.addWidget(self.view, 5)
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
+
+        self.shortcut.up.activated.connect(self.view.to_prev_sentence)
+        self.shortcut.down.activated.connect(self.view.to_next_sentence)
+        self.shortcut.z.activated.connect(self.view.play_sentence)
+
+    def start_record(self):
+        self.recorder.record()
+
+    def stop_record(self):
+        self.recorder.stop()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.start_record()
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Control:
+            self.stop_record()
