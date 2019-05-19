@@ -27,7 +27,7 @@ class Sentence(QWidget):
         self.layout = QGridLayout()
         self.play_button = PlayButton(self, sentence['start'], sentence['end'])
         self.text = QLabel(sentence['text'], self)
-        self.text.setWordWrap(True)
+        # self.text.setWordWrap(True)
         self.text.move(50, 0)
 
     def set_bold(self, to_set):
@@ -62,19 +62,18 @@ class View(QWidget):
     def __init__(self, rt, article):
         super().__init__()
         self.rt = rt
-        self.player = Player(article['audio'])
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.set_article(article['article'])
+        self.set_article(article)
         self.sentence_index = 0
         self.focus_sentence()
 
     def set_article(self, article):
-        # if not hasattr(self, 'layout'):
+        self.player = Player(article['audio'])
         for i in reversed(range(self.layout.count())):
             self.layout.itemAt(i).widget().setParent(None)
         self.paragraphs = []
-        for _paragraph in article:
+        for _paragraph in article['article']:
             paragraph = Paragraph(self, _paragraph)
             self.paragraphs.append(paragraph)
             self.layout.addWidget(paragraph)

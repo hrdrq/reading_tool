@@ -51,9 +51,9 @@ class Ui(QMainWindow):
         self.recorder.stop()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Control:
+        if event.key() == Qt.Key_Shift:
             self.start_record()
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Control:
+        if event.key() == Qt.Key_Shift:
             self.stop_record()

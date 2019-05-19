@@ -8,15 +8,17 @@ CHUNK = 1024
 WIDTH = 2
 CHANNELS = 2
 RATE = 44100
-RECORD_SECONDS = 5
 
 class Recorder:
 
     def __init__(self):
         self._recorder = PyAudio()
         self.recording = False
+        self.playing = False
 
     def record(self):
+        if self.playing:
+            return
         thread = Thread(target=self.start)
         thread.start()
 
@@ -38,7 +40,9 @@ class Recorder:
         self.recording = False
 
     def play(self):
+        self.playing = True
         for data in self.buffer:
             self.stream.write(data, CHUNK)  #play back audio stream
         self.stream.stop_stream()
         self.stream.close()
+        self.playing = False
