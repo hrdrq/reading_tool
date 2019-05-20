@@ -3,8 +3,10 @@
 from itertools import chain
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QPushButton, QScrollArea
+from PyQt5.Qt import QRect
 
 from rt.player import Player
+from rt.ui.edit import Edit
 
 class PlayButton(QPushButton):
 
@@ -58,21 +60,43 @@ class Paragraph(QWidget):
             self.layout.addWidget(sentence)
         self.setLayout(self.layout)
 
-class View(QScrollArea):
+class ToolBar(QWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.edit_button = QPushButton('Edit', self)
+        self.setFixedHeight(25)
+        self.edit_button.clicked.connect(self.show_edit)
+
+    def show_edit(self):
+        self.edit = Edit()
+        self.edit.show()
+
+class View(QWidget):
 
     def __init__(self, rt, article):
         super().__init__()
         self.rt = rt
+        self.base_layout = QVBoxLayout(self)
+        self.tool_bar = ToolBar(self)
+        self.scroll = QScrollArea(self)
+        self.base_layout.addWidget(self.tool_bar)
+        self.base_layout.addWidget(self.scroll)
+        # self.scroll.resize(600, 450)
         self.base = QWidget()
         self.layout = QVBoxLayout(self.base)
-        self.setWidget(self.base)
-        self.setWidgetResizable(True)
+        self.scroll.setWidget(self.base)
+        self.scroll.setWidgetResizable(True)
+        # self.scroll.move(0, 50)
         # self.setFixedHeight(400)
+        self.article = article
         self.set_article(article)
         self.sentence_index = 0
         self.focus_sentence()
 
     def set_article(self, article):
+        article = self.article
         self.player = Player(article['audio'])
         for i in reversed(range(self.layout.count())):
             self.layout.itemAt(i).widget().setParent(None)
