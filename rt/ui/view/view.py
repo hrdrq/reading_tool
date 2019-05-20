@@ -2,7 +2,7 @@
 
 from itertools import chain
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QPushButton, QScrollArea
 
 from rt.player import Player
 
@@ -24,11 +24,12 @@ class Sentence(QWidget):
     def __init__(self, parent, sentence):
         super().__init__()
         self.parent = parent
-        self.layout = QGridLayout()
+        # self.layout = QGridLayout()
         self.play_button = PlayButton(self, sentence['start'], sentence['end'])
         self.text = QLabel(sentence['text'], self)
         # self.text.setWordWrap(True)
         self.text.move(50, 0)
+        self.setFixedHeight(20)
 
     def set_bold(self, to_set):
         font = self.text.font()
@@ -57,13 +58,16 @@ class Paragraph(QWidget):
             self.layout.addWidget(sentence)
         self.setLayout(self.layout)
 
-class View(QWidget):
+class View(QScrollArea):
 
     def __init__(self, rt, article):
         super().__init__()
         self.rt = rt
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.base = QWidget()
+        self.layout = QVBoxLayout(self.base)
+        self.setWidget(self.base)
+        self.setWidgetResizable(True)
+        # self.setFixedHeight(400)
         self.set_article(article)
         self.sentence_index = 0
         self.focus_sentence()
@@ -81,21 +85,24 @@ class View(QWidget):
     def focus_sentence(self):
         self.sentences[self.sentence_index].focus()
 
-    def to_next_sentence(self):
+    def select_sentence(self, direction):
         sentences = self.sentences
-        if self.sentence_index == len(sentences) - 1:
+        if (direction == 'prev' and self.sentence_index == 0) or \
+            (direction == 'next' and self.sentence_index == len(sentences) - 1):
             return
         sentences[self.sentence_index].unfocus()
-        self.sentence_index += 1
-        sentences[self.sentence_index].focus()
+        self.sentence_index += (1 if direction == 'next' else -1)
+        sentence = sentences[self.sentence_index]
+        sentence.focus()
+        if sentence.visibleRegion().boundingRect().height() != sentence.height():
+            scroll_bar = self.verticalScrollBar()
+            scroll_bar.setValue(scroll_bar.value() + (100 if direction == 'next' else -100))
+
+    def to_next_sentence(self):
+        self.select_sentence('next')
 
     def to_prev_sentence(self):
-        if self.sentence_index == 0:
-            return
-        sentences = self.sentences
-        sentences[self.sentence_index].unfocus()
-        self.sentence_index -= 1
-        sentences[self.sentence_index].focus()
+        self.select_sentence('prev')
 
     def play_sentence(self):
         self.sentences[self.sentence_index].play()
