@@ -9,3 +9,4 @@ class Shortcut:
         self.up = QShortcut(QKeySequence("Up"), ui)
         self.down = QShortcut(QKeySequence("Down"), ui)
         self.z = QShortcut(QKeySequence("/"), ui)
+        self.e = QShortcut(QKeySequence("E"), ui)

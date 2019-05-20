@@ -43,6 +43,7 @@ class Ui(QMainWindow):
         self.shortcut.up.activated.connect(self.view.to_prev_sentence)
         self.shortcut.down.activated.connect(self.view.to_next_sentence)
         self.shortcut.z.activated.connect(self.view.play_sentence)
+        self.shortcut.e.activated.connect(self.view.tool_bar.show_edit)
 
     def start_record(self):
         self.recorder.record()

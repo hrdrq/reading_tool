@@ -52,13 +52,12 @@ class Paragraph(QWidget):
     def __init__(self, parent, paragraph):
         super().__init__()
         self.parent = parent
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout(self)
         self.sentences = []
         for _sentence in paragraph:
             sentence = Sentence(self, _sentence)
             self.sentences.append(sentence)
             self.layout.addWidget(sentence)
-        self.setLayout(self.layout)
 
 class ToolBar(QWidget):
 
@@ -70,7 +69,8 @@ class ToolBar(QWidget):
         self.edit_button.clicked.connect(self.show_edit)
 
     def show_edit(self):
-        self.edit = Edit()
+        self.edit = Edit(self.parent.article)
+        self.edit.resize(800, 600)
         self.edit.show()
 
 class View(QWidget):
