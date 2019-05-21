@@ -43,10 +43,16 @@ class Sentence(QWidget):
         self.text.editingFinished.connect(lambda: self.update('text'))
         self.start.editingFinished.connect(lambda: self.update('start'))
         self.end.editingFinished.connect(lambda: self.update('end'))
+        self.text.mousePressEvent = self.mousePressEvent
+        self.start.mousePressEvent = self.mousePressEvent
+        self.end.mousePressEvent = self.mousePressEvent
 
     def update(self, attr):
         value = getattr(self, attr).text()
         self.sentence[attr] = value if attr == 'text' else int(value or 0)
+
+    def mousePressEvent(self, event):
+        self.parent.mousePressEvent(event)
 
 class Paragraph(QWidget):
 
@@ -62,6 +68,9 @@ class Paragraph(QWidget):
             self.sentences.append(sentence)
             self.layout.addWidget(sentence)
 
+    def mousePressEvent(self, event):
+        self.parent.update_paragraph_focusing(self)
+
     # setStyleSheetを使うため、override必要がある
     # https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget
     def paintEvent(self, event):
@@ -69,6 +78,11 @@ class Paragraph(QWidget):
         opt.initFrom(self)
         painter = QPainter(self)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+
+    def add_sentence(self, raw_sentence):
+        sentence = Sentence(self, raw_sentence)
+        self.sentences.append(sentence)
+        self.layout.addWidget(sentence)
 
 
 class Edit(QWidget):
@@ -89,14 +103,25 @@ class Edit(QWidget):
 
         self.tool_bar.save_button.clicked.connect(self.save)
         self.tool_bar.add_paragraph_button.clicked.connect(self.add_paragraph)
+        self.tool_bar.add_sentence_button.clicked.connect(self.add_sentence)
         self.load()
 
+    @staticmethod
+    def create_raw_sentence():
+        return dict(text='', start=0, end=0)
+
     def add_paragraph(self):
-        raw_paragraph = [dict(text='', start=0, end=0)]
+        raw_paragraph = [self.create_raw_sentence()]
         self.article['article'].append(raw_paragraph)
         paragraph = Paragraph(self, raw_paragraph)
         self.paragraphs.append(paragraph)
         self.layout.addWidget(paragraph)
+
+    def add_sentence(self):
+        raw_sentence = self.create_raw_sentence()
+        self.article['article'][self.paragraph_focusing].append(raw_sentence)
+        self.paragraphs[self.paragraph_focusing].add_sentence(raw_sentence)
+
 
     def save(self):
         # print(self.file)
@@ -109,3 +134,10 @@ class Edit(QWidget):
             paragraph = Paragraph(self, _paragraph)
             self.paragraphs.append(paragraph)
             self.layout.addWidget(paragraph)
+        self.paragraph_focusing = 0
+
+    def update_paragraph_focusing(self, paragraph):
+        for index, p in enumerate(self.paragraphs):
+            if p == paragraph:
+                self.paragraph_focusing = index
+                break
