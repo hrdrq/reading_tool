@@ -32,7 +32,7 @@ class Ui(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
         article_list = self.rt.article.list()
         self.list = List(self.rt, article_list)
-        self.view = View(self.rt, self.rt.article.item(article_list[0]['id']))
+        self.view = View(self.rt, *self.rt.article.item(article_list[0]['id']))
         self.central_widget = QWidget()
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.list, 2)

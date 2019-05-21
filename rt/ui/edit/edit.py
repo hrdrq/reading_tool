@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QLineEdit
 
 class ToolBar(QWidget):
@@ -24,6 +26,7 @@ class Sentence(QWidget):
     def __init__(self, parent, sentence):
         super().__init__()
         self.parent = parent
+        self.sentence = sentence
         self.text = QLineEdit(sentence['text'], self)
         self.text.resize(800, 25)
         self.start = QLineEdit(str(sentence['start']), self)
@@ -35,6 +38,14 @@ class Sentence(QWidget):
         end_label.move(180, 30)
         self.end.move(210, 30)
         self.setFixedHeight(70)
+
+        self.text.editingFinished.connect(lambda: self.update('text'))
+        self.start.editingFinished.connect(lambda: self.update('start'))
+        self.end.editingFinished.connect(lambda: self.update('end'))
+
+    def update(self, attr):
+        value = getattr(self, attr).text()
+        self.sentence[attr] = value if attr == 'text' else int(value)
 
 class Paragraph(QWidget):
 
@@ -51,9 +62,10 @@ class Paragraph(QWidget):
 
 class Edit(QWidget):
 
-    def __init__(self, article):
+    def __init__(self, article, file):
         super().__init__()
         self.article = article
+        self.file = file
         self.base_layout = QVBoxLayout(self)
         self.tool_bar = ToolBar(self)
         self.scroll = QScrollArea(self)
@@ -64,8 +76,15 @@ class Edit(QWidget):
         self.scroll.setWidget(self.base)
         self.scroll.setWidgetResizable(True)
 
+        self.tool_bar.save_button.clicked.connect(self.save)
+
         self.paragraphs = []
         for _paragraph in article['article']:
             paragraph = Paragraph(self, _paragraph)
             self.paragraphs.append(paragraph)
             self.layout.addWidget(paragraph)
+
+    def save(self):
+        # print(self.file)
+        with open(self.file, 'w') as f:
+            json.dump(self.article, f, indent=2, ensure_ascii=False)

@@ -23,4 +23,5 @@ class Article(Base):
         return read_file(ARTICLES_JSON)
 
     def item(self, id):
-        return read_file(ARTICLES_DIR + str(id) + '.json')
+        file = ARTICLES_DIR + str(id) + '.json'
+        return read_file(file), file

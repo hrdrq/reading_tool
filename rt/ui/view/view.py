@@ -69,13 +69,13 @@ class ToolBar(QWidget):
         self.edit_button.clicked.connect(self.show_edit)
 
     def show_edit(self):
-        self.edit = Edit(self.parent.article)
+        self.edit = Edit(self.parent.article, self.parent.file)
         self.edit.resize(800, 600)
         self.edit.show()
 
 class View(QWidget):
 
-    def __init__(self, rt, article):
+    def __init__(self, rt, article, file):
         super().__init__()
         self.rt = rt
         self.base_layout = QVBoxLayout(self)
@@ -91,12 +91,14 @@ class View(QWidget):
         # self.scroll.move(0, 50)
         # self.setFixedHeight(400)
         self.article = article
-        self.set_article(article)
+        self.file = file
+        self.set_article(article, file)
         self.sentence_index = 0
         self.focus_sentence()
 
-    def set_article(self, article):
-        article = self.article
+    def set_article(self, article, file):
+        self.article = article
+        self.file = file
         self.player = Player(article['audio'])
         for i in reversed(range(self.layout.count())):
             self.layout.itemAt(i).widget().setParent(None)

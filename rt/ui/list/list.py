@@ -20,5 +20,4 @@ class List(QListWidget):
         self.itemClicked.connect(self.select)
 
     def select(self, item):
-        article = self.rt.article.item(item.id)
-        self.rt.ui.view.set_article(article)
+        self.rt.ui.view.set_article(*self.rt.article.item(item.id))
