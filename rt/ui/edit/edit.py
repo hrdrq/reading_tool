@@ -3,6 +3,7 @@
 import json
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QLineEdit
+from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 class ToolBar(QWidget):
 
@@ -29,8 +30,8 @@ class Sentence(QWidget):
         self.sentence = sentence
         self.text = QLineEdit(sentence['text'], self)
         self.text.resize(800, 25)
-        self.start = QLineEdit(str(sentence['start']), self)
-        self.end = QLineEdit(str(sentence['end']), self)
+        self.start = QLineEdit(str(sentence['start'] or ''), self)
+        self.end = QLineEdit(str(sentence['end'] or ''), self)
         start_label = QLabel('Start', self)
         end_label = QLabel('End', self)
         start_label.move(0, 30)
@@ -45,7 +46,7 @@ class Sentence(QWidget):
 
     def update(self, attr):
         value = getattr(self, attr).text()
-        self.sentence[attr] = value if attr == 'text' else int(value)
+        self.sentence[attr] = value if attr == 'text' else int(value or 0)
 
 class Paragraph(QWidget):
 
@@ -53,11 +54,21 @@ class Paragraph(QWidget):
         super().__init__()
         self.parent = parent
         self.layout = QVBoxLayout(self)
+        self.setObjectName('Paragraph')
+        self.setStyleSheet('#Paragraph{border:2px solid black;}')
         self.sentences = []
         for _sentence in paragraph:
             sentence = Sentence(self, _sentence)
             self.sentences.append(sentence)
             self.layout.addWidget(sentence)
+
+    # setStyleSheetを使うため、override必要がある
+    # https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget
+    def paintEvent(self, event):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        painter = QPainter(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
 
 
 class Edit(QWidget):
@@ -77,14 +88,24 @@ class Edit(QWidget):
         self.scroll.setWidgetResizable(True)
 
         self.tool_bar.save_button.clicked.connect(self.save)
+        self.tool_bar.add_paragraph_button.clicked.connect(self.add_paragraph)
+        self.load()
 
-        self.paragraphs = []
-        for _paragraph in article['article']:
-            paragraph = Paragraph(self, _paragraph)
-            self.paragraphs.append(paragraph)
-            self.layout.addWidget(paragraph)
+    def add_paragraph(self):
+        raw_paragraph = [dict(text='', start=0, end=0)]
+        self.article['article'].append(raw_paragraph)
+        paragraph = Paragraph(self, raw_paragraph)
+        self.paragraphs.append(paragraph)
+        self.layout.addWidget(paragraph)
 
     def save(self):
         # print(self.file)
         with open(self.file, 'w') as f:
             json.dump(self.article, f, indent=2, ensure_ascii=False)
+
+    def load(self):
+        self.paragraphs = []
+        for _paragraph in self.article['article']:
+            paragraph = Paragraph(self, _paragraph)
+            self.paragraphs.append(paragraph)
+            self.layout.addWidget(paragraph)
