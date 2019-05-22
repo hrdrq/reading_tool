@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
                             QScrollArea, QLabel, QLineEdit, QFileDialog
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
+from rt.ui.audio import Audio
+
 class ToolBar(QWidget):
 
     def __init__(self, parent):
@@ -115,8 +117,10 @@ class Edit(QWidget):
         self.base_layout = QVBoxLayout(self)
         self.tool_bar = ToolBar(self)
         self.scroll = QScrollArea(self)
+        self.audio = Audio(self)
         self.base_layout.addWidget(self.tool_bar)
         self.base_layout.addWidget(self.scroll)
+        self.base_layout.addWidget(self.audio)
         self.base = QWidget()
         self.layout = QVBoxLayout(self.base)
         self.scroll.setWidget(self.base)

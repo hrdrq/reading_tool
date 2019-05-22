@@ -70,7 +70,7 @@ class ToolBar(QWidget):
 
     def show_edit(self):
         self.edit = Edit(self.parent.article, self.parent.file)
-        self.edit.resize(800, 600)
+        self.edit.resize(800, 800)
         self.edit.show()
 
 class View(QWidget):
