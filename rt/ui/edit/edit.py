@@ -2,7 +2,8 @@
 
 import json
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
+                            QScrollArea, QLabel, QLineEdit, QFileDialog
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 class ToolBar(QWidget):
@@ -14,13 +15,27 @@ class ToolBar(QWidget):
         self.add_sentence_button = QPushButton('Add Sentence', self)
         self.add_paragraph_button = QPushButton('Add Paragraph', self)
         self.save_button = QPushButton('Save', self)
+        self.file_text = QLineEdit(parent.article['audio'], self)
+        self.file_text.setFixedWidth(280)
+        self.file_select = QPushButton('Select', self)
+        self.file_select.clicked.connect(self.show_file_dialog)
         self.add_sentence_button.setFixedWidth(140)
         self.add_paragraph_button.setFixedWidth(140)
         self.save_button.setFixedWidth(80)
         self.add_paragraph_button.move(150, 0)
         self.save_button.move(300, 0)
+        self.file_text.move(380, 0)
+        self.file_select.move(660, 0)
         self.setFixedHeight(25)
-        # self.edit_button.clicked.connect(self.show_edit)
+
+    def show_file_dialog(self):
+        self.file_dialog = QFileDialog()
+        self.file_dialog.fileSelected.connect(self.set_file)
+        self.file_dialog.show()
+
+    def set_file(self, file_name):
+        self.file_text.setText(file_name)
+        self.parent.article['audio'] = file_name
 
 class Sentence(QWidget):
 
