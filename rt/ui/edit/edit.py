@@ -64,7 +64,13 @@ class Sentence(QWidget):
 
     def update(self, attr):
         value = getattr(self, attr).text()
-        self.sentence[attr] = value if attr == 'text' else int(value or 0)
+        if attr == 'text':
+            self.sentence[attr] = value
+        else:
+            try:
+                self.sentence[attr] = int(value)
+            except:
+                self.sentence[attr] = 0
 
     def mousePressEvent(self, event):
         self.parent.mousePressEvent(event)
