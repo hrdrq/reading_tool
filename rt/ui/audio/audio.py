@@ -5,6 +5,8 @@ from threading import Thread
 
 from PyQt5.QtWidgets import QWidget, QScrollArea
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from pydub import AudioSegment
 import numpy as np

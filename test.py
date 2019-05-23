@@ -1,35 +1,20 @@
-import pyaudio
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QScrollArea
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg')
 
-CHUNK = 1024
-WIDTH = 2
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 5
+if __name__ == '__main__':
 
-p = pyaudio.PyAudio()
+    app = QApplication(sys.argv)
+    widget = QWidget()
+    widget.resize(400, 300)
+    fig, ax = plt.subplots(1)
+    fig.set_size_inches(30, 1)
+    figure_canvas = FigureCanvas(fig)
+    scroll = QScrollArea(widget)
+    scroll.setWidget(figure_canvas)
+    widget.show()
 
-stream = p.open(format=p.get_format_from_width(WIDTH),
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                output=True,
-                frames_per_buffer=CHUNK)
-
-print("* recording")
-
-buffer = []
-
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)  #read audio stream
-    buffer.append(data)
-
-
-for data in buffer:
-    stream.write(data, CHUNK)  #play back audio stream
-
-print("* done")
-
-stream.stop_stream()
-stream.close()
-
-p.terminate()
+    sys.exit(app.exec_())
