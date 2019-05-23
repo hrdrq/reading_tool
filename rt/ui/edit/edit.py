@@ -51,10 +51,12 @@ class Sentence(QWidget):
         self.end = QLineEdit(str(sentence['end'] or ''), self)
         start_label = QLabel('Start', self)
         end_label = QLabel('End', self)
+        self.set_button = QPushButton('Set', self)
         start_label.move(0, 30)
         self.start.move(40, 30)
         end_label.move(180, 30)
         self.end.move(210, 30)
+        self.set_button.move(350, 30)
         self.setFixedHeight(70)
 
         self.text.editingFinished.connect(lambda: self.update('text'))
@@ -63,6 +65,15 @@ class Sentence(QWidget):
         self.text.mousePressEvent = self.mousePressEvent
         self.start.mousePressEvent = self.mousePressEvent
         self.end.mousePressEvent = self.mousePressEvent
+        self.set_button.clicked.connect(self.set_start_end)
+
+    def set_start_end(self):
+        audio = self.parent.parent.audio
+        start, end = audio.start_end
+        self.sentence['start'] = start
+        self.sentence['end'] = end
+        self.start.setText(str(start))
+        self.end.setText(str(end))
 
     def update(self, attr):
         value = getattr(self, attr).text()
@@ -117,10 +128,11 @@ class Edit(QWidget):
         self.base_layout = QVBoxLayout(self)
         self.tool_bar = ToolBar(self)
         self.scroll = QScrollArea(self)
-        self.audio = Audio(self)
         self.base_layout.addWidget(self.tool_bar)
         self.base_layout.addWidget(self.scroll)
-        self.base_layout.addWidget(self.audio)
+        if article['audio']:
+            self.audio = Audio(self, article['audio'])
+            self.base_layout.addWidget(self.audio)
         self.base = QWidget()
         self.layout = QVBoxLayout(self.base)
         self.scroll.setWidget(self.base)
