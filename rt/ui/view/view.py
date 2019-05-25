@@ -121,7 +121,7 @@ class View(QWidget):
         sentence = sentences[self.sentence_index]
         sentence.focus()
         if sentence.visibleRegion().boundingRect().height() != sentence.height():
-            scroll_bar = self.verticalScrollBar()
+            scroll_bar = self.scroll.verticalScrollBar()
             scroll_bar.setValue(scroll_bar.value() + (100 if direction == 'next' else -100))
 
     def to_next_sentence(self):
