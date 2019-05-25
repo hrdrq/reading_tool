@@ -48,7 +48,6 @@ class Audio(QWidget):
         self.player = Player(path)
 
     def on_scroll(self, event):
-        print(event)
         if event.button == 'down' and self.offset < len(self.data) - 50:
             self.offset += 50
         elif event.button == 'up' and self.offset > 50:
@@ -66,20 +65,17 @@ class Audio(QWidget):
 
     def on_release(self, event):
         self.end = int(event.xdata)
-        print(self.start, self.end)
         if not self.fill:
             self.fill = self.ax.axvspan(self.start, self.end, alpha=0.5, color='yellow')
         else:
-            # import pdb
-            # pdb.set_trace()
             x0, x1 = self.start, self.end
             _ndarray = self.fill.get_xy()
             _ndarray[:, 0] = [x0, x0, x1, x1, x0]
             self.fill.set_xy(_ndarray)
         self.fig.canvas.draw()
-        thread = Thread(target=lambda:self.player.play(self.start * 10, self.end * 10))
+        thread = Thread(target=lambda:self.player.play((self.start - 1) * 10, (self.end + 1) * 10))
         thread.start()
 
     @property
     def start_end(self):
-        return self.start * 10, self.end * 10
+        return (self.start - 1) * 10, (self.end + 1) * 10

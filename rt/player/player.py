@@ -13,6 +13,7 @@ class Player(QMediaPlayer):
     def play(self, start, end):
         self.setPosition(start)
         super().play()
-        while self.position() < end:
+
+        while self.position() <= end:
             continue
         self.stop()
