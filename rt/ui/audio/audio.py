@@ -12,6 +12,7 @@ from pydub import AudioSegment
 import numpy as np
 
 from rt.player import Player
+from rt.config import get_path
 
 class Audio(QWidget):
 
@@ -31,7 +32,7 @@ class Audio(QWidget):
         layout.addWidget(self.figure_canvas)
         # self.setFixedWidth(750)
         self.setFixedHeight(300)
-        sound = AudioSegment.from_file(path, "mp3")
+        sound = AudioSegment.from_file(get_path(path), "mp3")
         data = np.array(sound.get_array_of_samples())
         data = data[::sound.channels]
         self.data = data[::int(sound.frame_rate / 100)]

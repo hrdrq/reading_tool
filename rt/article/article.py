@@ -4,17 +4,18 @@ import uuid
 import json
 
 from rt.base import Base
+from rt.config import get_path
 
 ARTICLES_JSON = 'articles.json'
 ARTICLES_DIR = 'articles/'
 
 def read_file(path):
-    with open(path) as f:
+    with open(get_path(path)) as f:
         data = json.load(f)
     return data
 
 def write_file(path, data):
-    with open(path, 'w') as f:
+    with open(get_path(path), 'w') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 class Article(Base):

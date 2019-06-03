@@ -10,16 +10,20 @@ from rt.ui.edit import Edit
 
 class PlayButton(QPushButton):
 
-    def __init__(self, parent, start, end):
+    def __init__(self, parent, start, end, audio):
         super().__init__(">", parent)
         self.parent = parent
         self.start = start
         self.end = end
+        self.audio = audio
         self.clicked.connect(self.play)
 
     def play(self):
         player = self.parent.parent.parent.player
-        player.play(self.start, self.end)
+        if self.audio:
+            player.play(path=self.audio)
+        else:
+            player.play(start=self.start, end=self.end)
 
 class Sentence(QWidget):
 
@@ -27,7 +31,7 @@ class Sentence(QWidget):
         super().__init__()
         self.parent = parent
         # self.layout = QGridLayout()
-        self.play_button = PlayButton(self, sentence['start'], sentence['end'])
+        self.play_button = PlayButton(self, sentence.get('start'), sentence.get('end'), sentence.get('audio'))
         self.text = QLabel(sentence['text'], self)
         # self.text.setWordWrap(True)
         self.text.move(50, 0)

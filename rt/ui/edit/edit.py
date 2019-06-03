@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 from rt.ui.audio import Audio
+from rt.config import get_path
 
 class ToolBar(QWidget):
 
@@ -17,17 +18,18 @@ class ToolBar(QWidget):
         self.add_sentence_button = QPushButton('Add Sentence', self)
         self.add_paragraph_button = QPushButton('Add Paragraph', self)
         self.save_button = QPushButton('Save', self)
-        self.file_text = QLineEdit(parent.article['audio'], self)
-        self.file_text.setFixedWidth(280)
-        self.file_select = QPushButton('Select', self)
-        self.file_select.clicked.connect(self.show_file_dialog)
+        if parent.article['audio']:
+            self.file_text = QLineEdit(parent.article['audio'], self)
+            self.file_text.setFixedWidth(280)
+            self.file_select = QPushButton('Select', self)
+            self.file_select.clicked.connect(self.show_file_dialog)
+            self.file_text.move(380, 0)
+            self.file_select.move(660, 0)
         self.add_sentence_button.setFixedWidth(140)
         self.add_paragraph_button.setFixedWidth(140)
         self.save_button.setFixedWidth(80)
         self.add_paragraph_button.move(150, 0)
         self.save_button.move(300, 0)
-        self.file_text.move(380, 0)
-        self.file_select.move(660, 0)
         self.setFixedHeight(25)
 
     def show_file_dialog(self):
@@ -47,25 +49,25 @@ class Sentence(QWidget):
         self.sentence = sentence
         self.text = QLineEdit(sentence['text'], self)
         self.text.resize(800, 25)
-        self.start = QLineEdit(str(sentence['start'] or ''), self)
-        self.end = QLineEdit(str(sentence['end'] or ''), self)
-        start_label = QLabel('Start', self)
-        end_label = QLabel('End', self)
-        self.set_button = QPushButton('Set', self)
-        start_label.move(0, 30)
-        self.start.move(40, 30)
-        end_label.move(180, 30)
-        self.end.move(210, 30)
-        self.set_button.move(350, 30)
+        if 'start' in sentence:
+            self.start = QLineEdit(str(sentence['start'] or ''), self)
+            self.end = QLineEdit(str(sentence['end'] or ''), self)
+            start_label = QLabel('Start', self)
+            end_label = QLabel('End', self)
+            self.set_button = QPushButton('Set', self)
+            start_label.move(0, 30)
+            self.start.move(40, 30)
+            end_label.move(180, 30)
+            self.end.move(210, 30)
+            self.set_button.move(350, 30)
+            self.text.editingFinished.connect(lambda: self.update('text'))
+            self.start.editingFinished.connect(lambda: self.update('start'))
+            self.end.editingFinished.connect(lambda: self.update('end'))
+            self.text.mousePressEvent = self.mousePressEvent
+            self.start.mousePressEvent = self.mousePressEvent
+            self.end.mousePressEvent = self.mousePressEvent
+            self.set_button.clicked.connect(self.set_start_end)
         self.setFixedHeight(70)
-
-        self.text.editingFinished.connect(lambda: self.update('text'))
-        self.start.editingFinished.connect(lambda: self.update('start'))
-        self.end.editingFinished.connect(lambda: self.update('end'))
-        self.text.mousePressEvent = self.mousePressEvent
-        self.start.mousePressEvent = self.mousePressEvent
-        self.end.mousePressEvent = self.mousePressEvent
-        self.set_button.clicked.connect(self.set_start_end)
 
     def set_start_end(self):
         audio = self.parent.parent.audio
@@ -162,7 +164,7 @@ class Edit(QWidget):
 
     def save(self):
         # print(self.file)
-        with open(self.file, 'w') as f:
+        with open(get_path(self.file), 'w') as f:
             json.dump(self.article, f, indent=2, ensure_ascii=False)
 
     def load(self):
