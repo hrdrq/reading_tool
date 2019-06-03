@@ -21,7 +21,7 @@ class PlayButton(QPushButton):
     def play(self):
         player = self.parent.parent.parent.player
         if self.audio:
-            player.play(path=self.audio)
+            player.play(files=[self.audio])
         else:
             player.play(start=self.start, end=self.end)
 
@@ -62,6 +62,14 @@ class Paragraph(QWidget):
             sentence = Sentence(self, _sentence)
             self.sentences.append(sentence)
             self.layout.addWidget(sentence)
+
+    def play(self):
+        player = self.parent.player
+        sentences = self.sentences
+        if sentences[0].play_button.start:
+            player.play(start=sentences[0].play_button.start, end=sentences[-1].play_button.end)
+        else:
+            player.play(files=[sentence.play_button.audio for sentence in sentences])
 
 class ToolBar(QWidget):
 
@@ -136,6 +144,9 @@ class View(QWidget):
 
     def play_sentence(self):
         self.sentences[self.sentence_index].play()
+
+    def play_paragraph(self):
+        self.sentences[self.sentence_index].parent.play()
 
     @property
     def sentences(self):

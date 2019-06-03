@@ -8,5 +8,6 @@ class Shortcut:
     def __init__(self, ui):
         self.up = QShortcut(QKeySequence("Up"), ui)
         self.down = QShortcut(QKeySequence("Down"), ui)
-        self.z = QShortcut(QKeySequence("/"), ui)
+        self.slash = QShortcut(QKeySequence("/"), ui)
+        self.dot = QShortcut(QKeySequence("."), ui)
         self.e = QShortcut(QKeySequence("E"), ui)

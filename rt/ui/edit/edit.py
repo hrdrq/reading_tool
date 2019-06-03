@@ -49,17 +49,19 @@ class Sentence(QWidget):
         self.sentence = sentence
         self.text = QLineEdit(sentence['text'], self)
         self.text.resize(800, 25)
+        self.remove_button = QPushButton('Remove', self)
+        self.remove_button.move(0, 30)
         if 'start' in sentence:
             self.start = QLineEdit(str(sentence['start'] or ''), self)
             self.end = QLineEdit(str(sentence['end'] or ''), self)
             start_label = QLabel('Start', self)
             end_label = QLabel('End', self)
             self.set_button = QPushButton('Set', self)
-            start_label.move(0, 30)
-            self.start.move(40, 30)
-            end_label.move(180, 30)
-            self.end.move(210, 30)
-            self.set_button.move(350, 30)
+            start_label.move(100, 30)
+            self.start.move(140, 30)
+            end_label.move(280, 30)
+            self.end.move(310, 30)
+            self.set_button.move(450, 30)
             self.text.editingFinished.connect(lambda: self.update('text'))
             self.start.editingFinished.connect(lambda: self.update('start'))
             self.end.editingFinished.connect(lambda: self.update('end'))
@@ -68,6 +70,7 @@ class Sentence(QWidget):
             self.end.mousePressEvent = self.mousePressEvent
             self.set_button.clicked.connect(self.set_start_end)
         self.setFixedHeight(70)
+        self.remove_button.clicked.connect(lambda: self.parent.parent.remove_sentence(self))
 
     def set_start_end(self):
         audio = self.parent.parent.audio
@@ -103,6 +106,10 @@ class Paragraph(QWidget):
             sentence = Sentence(self, _sentence)
             self.sentences.append(sentence)
             self.layout.addWidget(sentence)
+        self.remove_button = QPushButton('Remove Paragraph', self)
+        self.layout.addWidget(self.remove_button)
+
+        self.remove_button.clicked.connect(lambda: self.parent.remove_paragraph(self))
 
     def mousePressEvent(self, event):
         self.parent.update_paragraph_focusing(self)
@@ -161,6 +168,22 @@ class Edit(QWidget):
         self.article['article'][self.paragraph_focusing].append(raw_sentence)
         self.paragraphs[self.paragraph_focusing].add_sentence(raw_sentence)
 
+    def remove_sentence(self, sentence):
+        for p_index in range(len(self.paragraphs)):
+            for s_index in range(len(self.paragraphs[p_index].sentences)):
+                if self.paragraphs[p_index].sentences[s_index] == sentence:
+                    self.paragraphs[p_index].layout.removeWidget(sentence)
+                    del self.paragraphs[p_index].sentences[s_index]
+                    del self.article['article'][p_index][s_index]
+                    return
+
+    def remove_paragraph(self, paragraph):
+        for p_index in range(len(self.paragraphs)):
+            if self.paragraphs[p_index] == paragraph:
+                self.layout.removeWidget(paragraph)
+                del self.paragraphs[p_index]
+                del self.article['article'][p_index]
+                return
 
     def save(self):
         # print(self.file)
