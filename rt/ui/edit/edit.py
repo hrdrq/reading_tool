@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 from rt.ui.audio import Audio
-from rt.config import get_path
+from rt.config import get_path, root
 
 class ToolBar(QWidget):
 
@@ -38,6 +38,7 @@ class ToolBar(QWidget):
         self.file_dialog.show()
 
     def set_file(self, file_name):
+        file_name = file_name.replace(root(), '')
         self.file_text.setText(file_name)
         self.parent.article['audio'] = file_name
 
