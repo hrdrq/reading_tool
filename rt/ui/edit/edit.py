@@ -140,9 +140,11 @@ class Edit(QWidget):
         self.scroll = QScrollArea(self)
         self.base_layout.addWidget(self.tool_bar)
         self.base_layout.addWidget(self.scroll)
-        if article['audio']:
+        try:
             self.audio = Audio(self, article['audio'])
             self.base_layout.addWidget(self.audio)
+        except:
+            pass
         self.base = QWidget()
         self.layout = QVBoxLayout(self.base)
         self.scroll.setWidget(self.base)

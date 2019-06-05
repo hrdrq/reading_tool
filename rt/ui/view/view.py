@@ -128,8 +128,11 @@ class View(QWidget):
         if (direction == 'prev' and self.sentence_index == 0) or \
             (direction == 'next' and self.sentence_index == len(sentences) - 1):
             return
-        sentences[self.sentence_index].unfocus()
-        self.sentence_index += (1 if direction == 'next' else -1)
+        try:
+            sentences[self.sentence_index].unfocus()
+            self.sentence_index += (1 if direction == 'next' else -1)
+        except:
+            self.sentence_index = 0
         sentence = sentences[self.sentence_index]
         sentence.focus()
         if sentence.visibleRegion().boundingRect().height() != sentence.height():
