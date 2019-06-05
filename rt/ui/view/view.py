@@ -145,6 +145,21 @@ class View(QWidget):
     def to_prev_sentence(self):
         self.select_sentence('prev')
 
+    def to_first_sentence(self):
+        sentences = self.sentences
+        sentences[self.sentence_index].unfocus()
+        self.sentence_index = 0
+        sentences[0].focus()
+        self.scroll.verticalScrollBar().setValue(0)
+
+    def to_last_sentence(self):
+        sentences = self.sentences
+        sentences[self.sentence_index].unfocus()
+        self.sentence_index = len(sentences) - 1
+        sentences[self.sentence_index].focus()
+        scroll_bar = self.scroll.verticalScrollBar()
+        scroll_bar.setValue(scroll_bar.maximum())
+
     def play_sentence(self):
         self.sentences[self.sentence_index].play()
 
