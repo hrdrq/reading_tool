@@ -3,7 +3,11 @@
 import os
 
 def root():
-    return os.path.expanduser('~/reading_tool_files/')
+    root = os.path.expanduser('~/reading_tool_files')
+    try:
+        return os.readlink(root)
+    except:
+        return root
 
 def get_path(relative_path):
     return root() + relative_path
