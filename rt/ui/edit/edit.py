@@ -18,7 +18,7 @@ class ToolBar(QWidget):
         self.add_sentence_button = QPushButton('Add Sentence', self)
         self.add_paragraph_button = QPushButton('Add Paragraph', self)
         self.save_button = QPushButton('Save', self)
-        if parent.article['audio']:
+        if parent.article['audio'] != False:
             self.file_text = QLineEdit(parent.article['audio'], self)
             self.file_text.setFixedWidth(280)
             self.file_select = QPushButton('Select', self)

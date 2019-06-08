@@ -147,14 +147,20 @@ class View(QWidget):
 
     def to_first_sentence(self):
         sentences = self.sentences
-        sentences[self.sentence_index].unfocus()
+        try:
+            sentences[self.sentence_index].unfocus()
+        except:
+            pass
         self.sentence_index = 0
         sentences[0].focus()
         self.scroll.verticalScrollBar().setValue(0)
 
     def to_last_sentence(self):
         sentences = self.sentences
-        sentences[self.sentence_index].unfocus()
+        try:
+            sentences[self.sentence_index].unfocus()
+        except:
+            pass
         self.sentence_index = len(sentences) - 1
         sentences[self.sentence_index].focus()
         scroll_bar = self.scroll.verticalScrollBar()
