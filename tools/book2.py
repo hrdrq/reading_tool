@@ -13,7 +13,7 @@ class Convert():
         self.output_path = output_path
         self.read_lang()
         self.read_csv()
-        self.write_csv()
+        self.write_json()
 
     def read_lang(self):
         file_list = [f for f in os.listdir(self.source_path) if not f.startswith('.')]
@@ -42,7 +42,7 @@ class Convert():
                 sentences.append(sentence)
             self.contents.append((i, sentences))
 
-    def write_csv(self):
+    def write_json(self):
         articles_csv = os.path.join(self.output_path, "articles.json")
         with open(articles_csv, 'w') as f:
             json.dump(dict(title='book2', children=self.titles), f, indent=2, ensure_ascii=False)

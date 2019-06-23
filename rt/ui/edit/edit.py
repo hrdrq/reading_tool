@@ -52,17 +52,20 @@ class Sentence(QWidget):
         self.text.resize(800, 25)
         self.remove_button = QPushButton('Remove', self)
         self.remove_button.move(0, 30)
+        self.play_button = QPushButton('Play', self)
+        self.play_button.move(80, 30)
+        self.play_button.clicked.connect(self.play)
         if 'start' in sentence:
             self.start = QLineEdit(str(sentence['start'] or ''), self)
             self.end = QLineEdit(str(sentence['end'] or ''), self)
             start_label = QLabel('Start', self)
             end_label = QLabel('End', self)
             self.set_button = QPushButton('Set', self)
-            start_label.move(100, 30)
-            self.start.move(140, 30)
-            end_label.move(280, 30)
-            self.end.move(310, 30)
-            self.set_button.move(450, 30)
+            start_label.move(155, 30)
+            self.start.move(190, 30)
+            end_label.move(320, 30)
+            self.end.move(350, 30)
+            self.set_button.move(490, 30)
             self.text.editingFinished.connect(lambda: self.update('text'))
             self.start.editingFinished.connect(lambda: self.update('start'))
             self.end.editingFinished.connect(lambda: self.update('end'))
@@ -72,6 +75,9 @@ class Sentence(QWidget):
             self.set_button.clicked.connect(self.set_start_end)
         self.setFixedHeight(70)
         self.remove_button.clicked.connect(lambda: self.parent.parent.remove_sentence(self))
+
+    def play(self):
+        self.parent.parent.audio.player.play(self.sentence['start'], self.sentence['end'])
 
     def set_start_end(self):
         audio = self.parent.parent.audio
