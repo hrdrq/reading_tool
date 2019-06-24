@@ -3,7 +3,7 @@
 import json
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-                            QScrollArea, QLabel, QLineEdit, QFileDialog
+                            QScrollArea, QLabel, QLineEdit, QFileDialog, QSpinBox
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 from rt.ui.audio import Audio
@@ -56,8 +56,23 @@ class Sentence(QWidget):
         self.play_button.move(80, 30)
         self.play_button.clicked.connect(self.play)
         if 'start' in sentence:
-            self.start = QLineEdit(str(sentence['start'] or ''), self)
-            self.end = QLineEdit(str(sentence['end'] or ''), self)
+            # self.start = QLineEdit(str(sentence['start'] or ''), self)
+            # self.end = QLineEdit(str(sentence['end'] or ''), self)
+            for time_edit in ('start', 'end'):
+                setattr(self, time_edit, QSpinBox(self))
+                edit = getattr(self, time_edit)
+                edit.setMaximum(99999999)
+                edit.setSingleStep(100)
+                if sentence[time_edit]:
+                    edit.setValue(sentence[time_edit])
+                edit.valueChanged.connect(self.valueChanged)
+            # self.start = QSpinBox(self)
+            # if sentence['start']:
+            #     print("sentence['start']", sentence['start'], type(sentence['start']))
+            #     self.start.setValue(sentence['start'])
+            # self.end = QSpinBox(self)
+            # if sentence['end']:
+            #     self.end.setValue(sentence['end'])
             start_label = QLabel('Start', self)
             end_label = QLabel('End', self)
             self.set_button = QPushButton('Set', self)
@@ -70,8 +85,8 @@ class Sentence(QWidget):
             self.start.editingFinished.connect(lambda: self.update('start'))
             self.end.editingFinished.connect(lambda: self.update('end'))
             self.text.mousePressEvent = self.mousePressEvent
-            self.start.mousePressEvent = self.mousePressEvent
-            self.end.mousePressEvent = self.mousePressEvent
+            # self.start.mousePressEvent = self.mousePressEvent
+            # self.end.mousePressEvent = self.mousePressEvent
             self.set_button.clicked.connect(self.set_start_end)
         self.setFixedHeight(70)
         self.remove_button.clicked.connect(lambda: self.parent.parent.remove_sentence(self))
@@ -84,8 +99,8 @@ class Sentence(QWidget):
         start, end = audio.start_end
         self.sentence['start'] = start
         self.sentence['end'] = end
-        self.start.setText(str(start))
-        self.end.setText(str(end))
+        self.start.setValue(str(start))
+        self.end.setValue(str(end))
 
     def update(self, attr):
         value = getattr(self, attr).text()
@@ -99,6 +114,9 @@ class Sentence(QWidget):
 
     def mousePressEvent(self, event):
         self.parent.mousePressEvent(event)
+
+    def valueChanged(self):
+        print('valueChanged')
 
 class Paragraph(QWidget):
 
