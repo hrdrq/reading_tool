@@ -13,3 +13,4 @@ class Shortcut:
         self.slash = QShortcut(QKeySequence("/"), ui)
         self.dot = QShortcut(QKeySequence("."), ui)
         self.e = QShortcut(QKeySequence("E"), ui)
+        self.alt_z = QShortcut(QKeySequence("Alt+Z"), ui)

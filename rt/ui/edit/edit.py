@@ -8,6 +8,7 @@ from PyQt5.Qt import QStyleOption, QPainter, QStyle
 
 from rt.ui.audio import Audio
 from rt.config import get_path, root
+from rt.shortcut import Shortcut
 
 class ToolBar(QWidget):
 
@@ -112,11 +113,12 @@ class Sentence(QWidget):
             except:
                 self.sentence[attr] = 0
 
-    def mousePressEvent(self, event):
-        self.parent.mousePressEvent(event)
+    def mousePressEvent(self, _=None):
+        # self.parent.mousePressEvent()
+        self.parent.parent.update_sentence_focusing(self.parent, self)
 
     def valueChanged(self):
-        print('valueChanged')
+        self.mousePressEvent()
 
 class Paragraph(QWidget):
 
@@ -136,7 +138,7 @@ class Paragraph(QWidget):
 
         self.remove_button.clicked.connect(lambda: self.parent.remove_paragraph(self))
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self):
         self.parent.update_paragraph_focusing(self)
 
     # setStyleSheetを使うため、override必要がある
@@ -177,6 +179,8 @@ class Edit(QWidget):
         self.tool_bar.save_button.clicked.connect(self.save)
         self.tool_bar.add_paragraph_button.clicked.connect(self.add_paragraph)
         self.tool_bar.add_sentence_button.clicked.connect(self.add_sentence)
+        self.shortcut = Shortcut(self)
+        self.shortcut.alt_z.activated.connect(self.play_focusing_sentence)
         self.load()
 
     @staticmethod
@@ -224,9 +228,24 @@ class Edit(QWidget):
             self.paragraphs.append(paragraph)
             self.layout.addWidget(paragraph)
         self.paragraph_focusing = 0
+        self.sentence_focusing = 0
 
     def update_paragraph_focusing(self, paragraph):
         for index, p in enumerate(self.paragraphs):
             if p == paragraph:
                 self.paragraph_focusing = index
                 break
+
+    def update_sentence_focusing(self, paragraph, sentence):
+        for p_index, p in enumerate(self.paragraphs):
+            if p == paragraph:
+                self.paragraph_focusing = p_index
+                for s_index, s in enumerate(p.sentences):
+                    if s == sentence:
+                        self.sentence_focusing = s_index
+                        break
+                break
+
+    def play_focusing_sentence(self):
+        print('play_focusing_sentence')
+        self.paragraphs[self.paragraph_focusing].sentences[self.sentence_focusing].play()
