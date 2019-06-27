@@ -66,7 +66,8 @@ class Sentence(QWidget):
                 edit.setSingleStep(100)
                 if sentence[time_edit]:
                     edit.setValue(sentence[time_edit])
-                edit.valueChanged.connect(self.valueChanged)
+            self.start.valueChanged.connect(lambda: self.valueChanged('start'))
+            self.end.valueChanged.connect(lambda: self.valueChanged('end'))
             # self.start = QSpinBox(self)
             # if sentence['start']:
             #     print("sentence['start']", sentence['start'], type(sentence['start']))
@@ -117,8 +118,9 @@ class Sentence(QWidget):
         # self.parent.mousePressEvent()
         self.parent.parent.update_sentence_focusing(self.parent, self)
 
-    def valueChanged(self):
+    def valueChanged(self, attr):
         self.mousePressEvent()
+        self.update(attr)
 
 class Paragraph(QWidget):
 
