@@ -45,6 +45,7 @@ class Ui(QMainWindow):
         self.shortcut.ctrl_up.activated.connect(self.view.to_first_sentence)
         self.shortcut.ctrl_down.activated.connect(self.view.to_last_sentence)
         self.shortcut.slash.activated.connect(self.view.play_sentence)
+        self.shortcut.underline.activated.connect(self.view.play_sentence)
         self.shortcut.dot.activated.connect(self.view.play_paragraph)
         self.shortcut.e.activated.connect(self.view.tool_bar.show_edit)
 
