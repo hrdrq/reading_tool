@@ -51,6 +51,8 @@ class Sentence(QWidget):
         self.sentence = sentence
         self.text = QLineEdit(sentence['text'], self)
         self.text.resize(800, 25)
+        self.text.editingFinished.connect(lambda: self.update('text'))
+        self.text.mousePressEvent = self.mousePressEvent
         self.remove_button = QPushButton('Remove', self)
         self.remove_button.move(0, 30)
         self.play_button = QPushButton('Play', self)
@@ -83,10 +85,8 @@ class Sentence(QWidget):
             end_label.move(320, 30)
             self.end.move(350, 30)
             self.set_button.move(490, 30)
-            self.text.editingFinished.connect(lambda: self.update('text'))
             self.start.editingFinished.connect(lambda: self.update('start'))
             self.end.editingFinished.connect(lambda: self.update('end'))
-            self.text.mousePressEvent = self.mousePressEvent
             # self.start.mousePressEvent = self.mousePressEvent
             # self.end.mousePressEvent = self.mousePressEvent
             self.set_button.clicked.connect(self.set_start_end)
@@ -140,7 +140,7 @@ class Paragraph(QWidget):
 
         self.remove_button.clicked.connect(lambda: self.parent.remove_paragraph(self))
 
-    def mousePressEvent(self):
+    def mousePressEvent(self, _):
         self.parent.update_paragraph_focusing(self)
 
     # setStyleSheetを使うため、override必要がある
@@ -249,5 +249,5 @@ class Edit(QWidget):
                 break
 
     def play_focusing_sentence(self):
-        print('play_focusing_sentence')
+        # print('play_focusing_sentence')
         self.paragraphs[self.paragraph_focusing].sentences[self.sentence_focusing].play()
