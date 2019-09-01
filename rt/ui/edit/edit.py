@@ -5,10 +5,12 @@ import json
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
                             QScrollArea, QLabel, QLineEdit, QFileDialog, QSpinBox
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
+from PyQt5.QtCore import Qt
 
 from rt.ui.audio import Audio
 from rt.config import get_path, root
 from rt.shortcut import Shortcut
+from rt.recorder import Recorder
 
 class ToolBar(QWidget):
 
@@ -183,6 +185,7 @@ class Edit(QWidget):
         self.tool_bar.add_sentence_button.clicked.connect(self.add_sentence)
         self.shortcut = Shortcut(self)
         self.shortcut.alt_z.activated.connect(self.play_focusing_sentence)
+        self.recorder = Recorder()
         self.load()
 
     @staticmethod
@@ -251,3 +254,17 @@ class Edit(QWidget):
     def play_focusing_sentence(self):
         # print('play_focusing_sentence')
         self.paragraphs[self.paragraph_focusing].sentences[self.sentence_focusing].play()
+
+    def start_record(self):
+        self.recorder.record()
+
+    def stop_record(self):
+        self.recorder.stop()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Shift:
+            self.start_record()
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Shift:
+            self.stop_record()
