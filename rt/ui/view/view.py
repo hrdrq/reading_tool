@@ -4,6 +4,7 @@ from itertools import chain
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QPushButton, QScrollArea
 from PyQt5.Qt import QRect
+from PyQt5 import QtGui, QtWidgets
 
 from rt.player import Player
 from rt.ui.edit import Edit
@@ -11,7 +12,10 @@ from rt.ui.edit import Edit
 class PlayButton(QPushButton):
 
     def __init__(self, parent, start, end, audio):
-        super().__init__(">", parent)
+        super().__init__('', parent)
+        style = QtWidgets.QStyle.SP_MediaPlay
+        icon = parent.style().standardIcon(style)
+        self.setIcon(icon)
         self.parent = parent
         self.start = start
         self.end = end
@@ -34,8 +38,8 @@ class Sentence(QWidget):
         self.play_button = PlayButton(self, sentence.get('start'), sentence.get('end'), sentence.get('audio'))
         self.text = QLabel(sentence['text'], self)
         # self.text.setWordWrap(True)
-        self.text.move(50, 0)
-        self.setFixedHeight(20)
+        self.text.move(62, 6)
+        self.setFixedHeight(26)
 
     def set_bold(self, to_set):
         font = self.text.font()
