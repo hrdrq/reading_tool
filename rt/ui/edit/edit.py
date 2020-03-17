@@ -3,7 +3,7 @@
 import json
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-                            QScrollArea, QLabel, QLineEdit, QFileDialog, QSpinBox
+                            QScrollArea, QLabel, QLineEdit, QFileDialog, QSpinBox, QCheckBox
 from PyQt5.Qt import QStyleOption, QPainter, QStyle
 from PyQt5.QtCore import Qt
 
@@ -60,6 +60,10 @@ class Sentence(QWidget):
         self.play_button = QPushButton('Play', self)
         self.play_button.move(80, 30)
         self.play_button.clicked.connect(self.play)
+        self.not_play_check = QCheckBox('Not play', self)
+        self.not_play_check.move(580, 30)
+        self.not_play_check.setCheckState(sentence.get('not_play', 0))
+        self.not_play_check.stateChanged.connect(lambda: self.sentence.update({'not_play': self.not_play_check.checkState()}))
         if 'start' in sentence:
             # self.start = QLineEdit(str(sentence['start'] or ''), self)
             # self.end = QLineEdit(str(sentence['end'] or ''), self)

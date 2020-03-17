@@ -33,6 +33,7 @@ class Sentence(QWidget):
 
     def __init__(self, parent, sentence):
         super().__init__()
+        self.not_play = sentence.get('not_play', 0)
         self.parent = parent
         # self.layout = QGridLayout()
         self.play_button = PlayButton(self, sentence.get('start'), sentence.get('end'), sentence.get('audio'))
@@ -40,6 +41,9 @@ class Sentence(QWidget):
         # self.text.setWordWrap(True)
         self.text.move(62, 6)
         self.setFixedHeight(26)
+        if self.not_play:
+            self.play_button.hide()
+            self.text.setStyleSheet('color: grey')
 
     def set_bold(self, to_set):
         font = self.text.font()
@@ -53,6 +57,8 @@ class Sentence(QWidget):
         self.set_bold(False)
 
     def play(self):
+        if self.not_play:
+            return
         self.play_button.play()
 
 class Paragraph(QWidget):
@@ -110,6 +116,10 @@ class View(QWidget):
         self.file = file
         self.set_article(article, file)
         self.sentence_index = 0
+        for i, sentence in enumerate(self.sentences):
+            if not sentence.not_play:
+                self.sentence_index = i
+                break
         self.focus_sentence()
 
     def set_article(self, article, file):
@@ -129,15 +139,21 @@ class View(QWidget):
 
     def select_sentence(self, direction):
         sentences = self.sentences
-        if (direction == 'prev' and self.sentence_index == 0) or \
-            (direction == 'next' and self.sentence_index == len(sentences) - 1):
-            return
-        try:
-            sentences[self.sentence_index].unfocus()
-            self.sentence_index += (1 if direction == 'next' else -1)
-        except:
-            self.sentence_index = 0
         sentence = sentences[self.sentence_index]
+        sentence.unfocus()
+        if direction == 'next':
+            for i, sen in list(enumerate(sentences))[self.sentence_index + 1:]:
+                if not sen.not_play:
+                    sentence = sen
+                    self.sentence_index = i
+                    break
+        elif direction == 'prev':
+            for i, sen in reversed(list(enumerate(sentences))[:self.sentence_index]):
+                if not sen.not_play:
+                    sentence = sen
+                    self.sentence_index = i
+                    break
+
         sentence.focus()
         if sentence.visibleRegion().boundingRect().height() != sentence.height():
             scroll_bar = self.scroll.verticalScrollBar()
